@@ -140,7 +140,7 @@ class Rubiks {
             time /= 1000; // convert to seconds
             if (this.cube) {
                 if (time < 2) {
-                    this.cube.position.z = (-1 + time / 2) * 100;
+                    this.cube.position.z = (-1 + time / 2) * 10;
                 } else {
                     this.cube.position.z = 0;
                 }
