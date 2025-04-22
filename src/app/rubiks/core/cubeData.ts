@@ -31,12 +31,12 @@ class CubeData {
     public constructor(
         cubeOrder = 3,
         colors: CubeColor = [
-            "#FF0000",   // Red
-            "#0000FF",   // Blue
-            "#FFFF00",   // Yellow
-            "#008000",   // Green
-            "#FFA500",   // Orange
-            "#FFFFFF",   // White
+            "#FF0000",
+            "#FFA500",
+            "#008000",
+            "#0000FF",
+            "#FFFF00",
+            "#FFFFFF",
         ]
     ) {
         this.cubeOrder = cubeOrder;
