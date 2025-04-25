@@ -109,7 +109,15 @@ class Rubiks {
             // start timer
             setFinish(false);
             setTime(0);
-            this.startTimer();
+            
+            const waitForFirstRotation = () => {
+                if (this.cube?.state.inRotation) {
+                    this.startTimer();
+                } else {
+                    requestAnimationFrame(waitForFirstRotation);
+                }
+            };
+            requestAnimationFrame(waitForFirstRotation);
         }
     }
 
