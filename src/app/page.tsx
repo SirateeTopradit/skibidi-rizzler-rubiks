@@ -4,6 +4,7 @@ import Rubiks from "./rubiks";
 export default function Page() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [rubik, setRubik] = useState<Rubiks | null>(null);
+
     useEffect(() => {
         if (containerRef.current && !rubik) {
             const instance = new Rubiks(containerRef.current);
@@ -28,6 +29,12 @@ export default function Page() {
             </div>
             <div ref={containerRef} className="flex-grow" />
             <div className="absolute top-4 right-4 z-10 flex space-x-2">
+                <button
+                    onClick={() => rubik?.disorder2()}
+                    className="px-3 py-1 bg-yellow-600 text-white rounded"
+                >
+                    test
+                </button>
                 <button
                     onClick={() => rubik?.disorder()}
                     className="px-3 py-1 bg-red-600 text-white rounded"
