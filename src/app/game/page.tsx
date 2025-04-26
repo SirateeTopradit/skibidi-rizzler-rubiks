@@ -32,13 +32,13 @@ export default function Page() {
             <div className="absolute top-4 right-4 z-10 flex space-x-2">
                 <button
                     onClick={() => rubik?.disorder2()}
-                    className="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded-3xl"
+                    className="bg-green-500 text-white font-bold py-2 px-4 border-b-4 border-green-700 rounded-3xl hover:scale-110"
                 >
                     Start
                 </button>
                 <button
                     onClick={() => rubik?.restore()}
-                    className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded-3xl"
+                    className="bg-red-500 text-white font-bold py-2 px-4 border-b-4 border-red-700 rounded-3xl hover:scale-110"
                 >
                     Reset
                 </button>
