@@ -1,59 +1,44 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import Rubiks from "./rubiks";
-export default function Page() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [rubik, setRubik] = useState<Rubiks | null>(null);
+import Link from "next/link";
+import Image from "next/image";
 
-    useEffect(() => {
-        if (containerRef.current && !rubik) {
-            const instance = new Rubiks(containerRef.current);
-            setRubik(instance);
+export default function Page() {
+  return (
+    <div className="relative w-screen h-screen overflow-hidden ">
+      {/* พื้นหลัง */}
+      <Image
+        src="/img/rubik-main.jpg"
+        alt="Rubik Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0 brightness-75 blur-[3px]"
+      />
+
+      {/* ชั้นบนสุด */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white animate-fadeIn uppercase">
+        {/* หัวข้อ */}
+        <h1 className="text-5xl md:text-7xl font-bold mb-8 text-shadow-lg/20 italic ">
+          Rubik's Challenge
+        </h1>
+
+        {/* ปุ่ม Play */}
+        <Link href="/game">
+          <button className="px-12 py-4 hover:scale-110 bg-gradient-to-r from-blue-950 to-indigo-950 outline-2 outline-offset-2 rounded-3xl text-2xl font-semibold shadow-lg transition-all duration-300 ">
+            PLAY
+          </button>
+        </Link>
+      </div>
+
+      {/* CSS Animation */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-    }, [rubik]);
-    return (
-        <div className="w-screen h-screen relative flex">
-            <div className="absolute top-4 left-4 z-10 flex space-x-4 items-center text-white">
-                <span
-                    id="timer"
-                    className="bg-black bg-opacity-50 px-2 rounded"
-                >
-                    00:00
-                </span>
-                <span
-                    id="finish"
-                    className="bg-black bg-opacity-50 px-2 rounded"
-                >
-                    😽
-                </span>
-            </div>
-            <div ref={containerRef} className="flex-grow" />
-            <div className="absolute top-4 right-4 z-10 flex space-x-2">
-                <button
-                    onClick={() => rubik?.disorder2()}
-                    className="px-3 py-1 bg-yellow-600 text-white rounded"
-                >
-                    test
-                </button>
-                <button
-                    onClick={() => rubik?.disorder()}
-                    className="px-3 py-1 bg-red-600 text-white rounded"
-                >
-                    tungtungtungsahurr
-                </button>
-                <button
-                    onClick={() => rubik?.disorder()}
-                    className="px-3 py-1 bg-blue-600 text-white rounded"
-                >
-                    Start
-                </button>
-                <button
-                    onClick={() => rubik?.restore()}
-                    className="px-3 py-1 bg-green-600 text-white rounded"
-                >
-                    Reset
-                </button>
-            </div>
-        </div>
-    );
+        .animate-fadeIn {
+          animation: fadeIn 1s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
 }
