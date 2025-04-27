@@ -6,6 +6,7 @@ import createRenderer from "./components/renderer";
 import {Cube} from "./core/cube";
 import Control, {MouseControl, TouchControl} from "./core/control";
 import { setTime, setFinish } from "./core/statusbar";
+import confetti from 'canvas-confetti';
 
 const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
     // Set the camera's aspect ratio
@@ -104,7 +105,7 @@ class Rubiks {
         if (this.cube) {
             const winW = this.renderer.domElement.clientWidth;
             const winH = this.renderer.domElement.clientHeight;
-            this.cube.scrambleSmartAnimated(20);
+            this.cube.scrambleSmartAnimated(1);
             this.render();
             // start timer
             setFinish(false);
@@ -150,6 +151,23 @@ class Rubiks {
             if (this.cube?.finish) {
                 clearInterval(this.timerId!);
                 setFinish(true); // show finish message when solved
+                // celebrate with confetti
+                confetti({ particleCount: 500, spread: 200 });
+                // congratulations effect and auto reset after solving
+                const overlay = document.createElement("div");
+                overlay.id = "congrats-overlay";
+                overlay.style.cssText = 
+                    "position:fixed;top:0;left:0;width:100%;height:100%;" +
+                    "display:flex;align-items:center;justify-content:center;text-align:center;" +
+                    "font-size:3rem;color:#fff;background:rgba(0,0,0,0.5);z-index:1000;";
+                // show final elapsed time on the overlay
+                const finalTime = document.getElementById("timer")?.innerText || "";
+                overlay.innerHTML = `🎉 Congratulations! 🎉<br/>${finalTime}`;
+                document.body.appendChild(overlay);
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                    this.restore();
+                }, 3000);
             }
         }, 500);
     }
