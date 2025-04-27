@@ -1,0 +1,11 @@
+Model Information:
+* title:	The Impossible Rubik's Cube
+* source:	https://sketchfab.com/3d-models/the-impossible-rubiks-cube-e81f8bdcc1f54b2f99b72ea5294c3dd0
+* author:	Erai (https://sketchfab.com/InfuriatingScholar)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "The Impossible Rubik's Cube" (https://sketchfab.com/3d-models/the-impossible-rubiks-cube-e81f8bdcc1f54b2f99b72ea5294c3dd0) by Erai (https://sketchfab.com/InfuriatingScholar) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
