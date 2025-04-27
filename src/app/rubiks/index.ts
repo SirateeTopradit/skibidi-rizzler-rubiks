@@ -89,12 +89,35 @@ class Rubiks {
      */
     public disorder() {
         if (this.cube) {
-            this.cube.disorder();
+            const winW = this.renderer.domElement.clientWidth;
+            const winH = this.renderer.domElement.clientHeight;
+            this.cube.scrambleSmart(20);
             this.render();
             // start timer
             setFinish(false);
             setTime(0);
             this.startTimer();
+        }
+    }
+
+    public disorder2() {
+        if (this.cube) {
+            const winW = this.renderer.domElement.clientWidth;
+            const winH = this.renderer.domElement.clientHeight;
+            this.cube.scrambleSmartAnimated(20);
+            this.render();
+            // start timer
+            setFinish(false);
+            setTime(0);
+            
+            const waitForFirstRotation = () => {
+                if (this.cube?.state.inRotation) {
+                    this.startTimer();
+                } else {
+                    requestAnimationFrame(waitForFirstRotation);
+                }
+            };
+            requestAnimationFrame(waitForFirstRotation);
         }
     }
 
