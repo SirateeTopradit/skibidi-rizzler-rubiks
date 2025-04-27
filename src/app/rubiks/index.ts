@@ -26,12 +26,14 @@ class Rubiks {
     private camera: PerspectiveCamera;
     private scene: Scene;
     private cube: Cube | undefined;
+    private materialType: string;
     private renderer: WebGLRenderer;
     private _controls: Control[] = [];
     public constructor(container: Element) {
         this.camera = createCamera();
         this.scene = createScene("#9e7a68");
         this.renderer = createRenderer();
+        this.materialType = 'plastic';
         // load environment HDR and apply for PBR reflections
         const pmrem = new PMREMGenerator(this.renderer);
         pmrem.compileEquirectangularShader();
@@ -66,7 +68,7 @@ class Rubiks {
             this._controls.forEach((control) => control.dispose());
         }
 
-        const cube = new Cube(order);
+        const cube = new Cube(order, this.materialType);
         this.scene.add(cube);
         this.cube = cube;
         this.render();
@@ -83,6 +85,16 @@ class Rubiks {
         );
 
         this.render();
+    }
+
+    /**
+     * Change the rubik material type and recreate cube
+     */
+    public setMaterialType(type: string) {
+        this.materialType = type;
+        if (this.cube) {
+            this.setOrder(this.cube instanceof Cube ? this.cube.order : 3);
+        }
     }
 
     /**

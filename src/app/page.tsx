@@ -4,6 +4,7 @@ import Rubiks from "./rubiks";
 export default function Page() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [rubik, setRubik] = useState<Rubiks | null>(null);
+    const [materialType, setMaterialType] = useState<string>('plastic');
 
     useEffect(() => {
         if (containerRef.current && !rubik) {
@@ -28,7 +29,24 @@ export default function Page() {
                 </span>
             </div>
             <div ref={containerRef} className="flex-grow" />
-            <div className="absolute top-4 right-4 z-10 flex space-x-2">
+            <div className="absolute top-4 right-4 z-10 flex space-x-2 items-center">
+                <select
+                    value={materialType}
+                    onChange={(e) => {
+                        setMaterialType(e.target.value);
+                        rubik?.setMaterialType(e.target.value);
+                    }}
+                    className="px-2 py-1 bg-gray-800 text-white rounded"
+                >
+                    <option value="plastic">Plastic</option>
+                    <option value="glass">Glass</option>
+                    <option value="metal">Metal</option>
+                    <option value="mostReflexMetal">Most Reflex Metal</option>
+                    <option value="mostBright">Most Bright</option>
+                    <option value="wooden">Wooden</option>
+                    <option value="water">Water</option>
+                    <option value="frost">Frost</option>
+                </select>
                 <button
                     onClick={() => rubik?.disorder2()}
                     className="px-3 py-1 bg-yellow-600 text-white rounded"
