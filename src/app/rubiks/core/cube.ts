@@ -66,7 +66,7 @@ export class Cube extends Group {
         mouseCurPos: Vector2,
         controlSquare: SquareMesh,
         camera: Camera,
-        winSize: { w: number; h: number }
+        winSize: { w: number; h: number },
     ) {
         if (mouseCurPos.distanceTo(mousePrePos) < 5) {
             return;
@@ -222,6 +222,7 @@ export class Cube extends Group {
                 rotateDir,
                 rotateAxisLocal
             );
+
         }
 
         const rotateSquares = this.state.activeSquares;
@@ -405,21 +406,30 @@ export class Cube extends Group {
     }
 
     public restore() {
+        if (this.rotateAnimationId !== null) {
+            cancelAnimationFrame(this.rotateAnimationId);
+            this.rotateAnimationId = null;
+        }
         this.data.initialFinishData();
         this.data.saveDataToLocal();
         this.createChildrenByData();
         setFinish(this.finish);
     }
     
-    public rotatePlane(controlSquare: SquareMesh, axis: Vector3, angle90: number) {
-        // 1. เตรียมหมุน
+    private rotateAnimationId: number | null = null; // <-- add this at the top of your class
+
+    public rotatePlane(controlSquare: SquareMesh, axis: Vector3, angle90: number, onComplete?: () => void) {
+        if (this.rotateAnimationId !== null) {
+            cancelAnimationFrame(this.rotateAnimationId);
+            this.rotateAnimationId = null;
+        }
+
         const squareNormal = controlSquare.element.normal;
         const squarePos = controlSquare.element.pos;
-    
-        // 2. หา plane (ระนาบ) ที่จะหมุน
+
         const rotateSquares: SquareMesh[] = [];
         const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
-    
+
         for (let i = 0; i < this.squares.length; i++) {
             const squareTemPos = getTemPos(this.squares[i], this.data.elementSize);
             const squareVec = controlTemPos.clone().sub(squareTemPos);
@@ -427,27 +437,50 @@ export class Cube extends Group {
                 rotateSquares.push(this.squares[i]);
             }
         }
-    
-        // 3. หมุนจริง
-        const rotateMat = new Matrix4();
-        rotateMat.makeRotationAxis(axis.clone().normalize(), angle90 * (Math.PI * 0.5)); // angle90 = +1, -1, +2, etc
-    
-        for (let i = 0; i < rotateSquares.length; i++) {
-            rotateSquares[i].applyMatrix4(rotateMat);
-            rotateSquares[i].updateMatrix();
-        }
-    
-        // 4. อัปเดตสถานะหลังหมุน
-        this.state.activeSquares = rotateSquares;
-        this.state.rotateAxisLocal = axis;
-        this.state.rotateAnglePI = angle90 * (Math.PI * 0.5);
-        this.updateStateAfterRotate();
-        this.state.inRotation = false;
-    
-        // 5. save ข้อมูลด้วย (optional)
-        this.data.saveDataToLocal();
-        setFinish(this.finish);
+
+        //if (angle90 < 0) angle90 += 4;
+
+        const totalRotationAngle = angle90 * (Math.PI * 0.5);
+        const numFrames = 30;
+        const rotateSpeed = totalRotationAngle / numFrames;
+
+        let rotatedAngle = 0;
+
+        const rotateTick = () => {
+            let curRotate = rotateSpeed;
+
+            if (Math.abs(rotatedAngle + rotateSpeed) > Math.abs(totalRotationAngle)) {
+                curRotate = totalRotationAngle - rotatedAngle;
+            }
+
+            const rotateMatCurrent = new Matrix4();
+            rotateMatCurrent.makeRotationAxis(axis.clone().normalize(), curRotate);
+
+            for (let i = 0; i < rotateSquares.length; i++) {
+                rotateSquares[i].applyMatrix4(rotateMatCurrent);
+                rotateSquares[i].updateMatrix();
+            }
+
+            rotatedAngle += curRotate;
+
+            if (Math.abs(rotatedAngle) < Math.abs(totalRotationAngle)) {
+                this.rotateAnimationId = requestAnimationFrame(rotateTick);
+            } else {
+                this.rotateAnimationId = null;
+                this.state.activeSquares = rotateSquares;
+                this.state.rotateAxisLocal = axis;
+                this.state.rotateAnglePI = totalRotationAngle;
+                this.updateStateAfterRotate();
+                this.state.inRotation = false;
+
+                if (onComplete) onComplete();
+            }
+        };
+
+        rotateTick();
     }
+
+    
     
 
     public scrambleSmart(count: number) {
@@ -474,18 +507,17 @@ export class Cube extends Group {
             const axis = axes[Math.floor(Math.random() * axes.length)];
             const angle = Math.random() > 0.5 ? 1 : -1;
     
-            this.rotatePlane(controlSquare, axis, angle);
-    
-            current++;
-    
-            // Wait a bit (e.g. 150ms) before next move
-            setTimeout(() => {
-                requestAnimationFrame(doOneScramble);
-            }, 150);
+            this.rotatePlane(controlSquare, axis, angle, () => {
+                current++;
+                setTimeout(() => {
+                    requestAnimationFrame(doOneScramble);
+                }, 100);  // Wait before the next rotation
+            });
         };
     
-        doOneScramble();
+        doOneScramble(); // Start the scrambling animation
     }
+    
 
     private getRandomControlSquare(): SquareMesh {
         // Pick any random square
