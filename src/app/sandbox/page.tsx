@@ -68,6 +68,7 @@ export default function Page() {
     useEffect(() => {
         if (containerRef.current && !rubik) {
             const instance = new Rubiks(containerRef.current);
+            instance.restore();
             setRubik(instance);
         }
     }, [rubik]);
@@ -89,8 +90,7 @@ export default function Page() {
 
     return (
         <div className="w-screen h-screen relative flex" style={{ backgroundColor: '#9e7a68' }}>
-            {/* Changed div to center the timer and place it behind other elements */}
-            <div className="absolute inset-0 z-0 flex justify-center text-white">
+            <div className="absolute inset-0 z-0 flex justify-center text-white mt-5">
                 <span
                     id="timer"
                     className="text-5xl"
@@ -99,15 +99,14 @@ export default function Page() {
                 </span>
             </div>
             <div ref={containerRef} className="flex-grow z-1" />
-            {/* Keep controls on top */}
-            <div className="absolute top-4 right-4 z-10 flex space-x-2">
+            <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2 lg:flex-row lg:space-x-2 lg:space-y-0">
                 <button
                     onClick={() => rubik?.disorder2()}
-                    className="px-3 py-1 bg-yellow-600 text-white rounded"
+                    className="px-3 py-1 bg-blue-600 text-white rounded"
                 >
-                    test
+                    Start
                 </button>
-                <button
+                {/* <button
                     onClick={() => rubik?.disorder()}
                     className="px-3 py-1 bg-red-600 text-white rounded"
                 >
@@ -118,7 +117,7 @@ export default function Page() {
                     className="px-3 py-1 bg-blue-600 text-white rounded"
                 >
                     Start
-                </button>
+                </button> */}
                 <button
                     onClick={() => rubik?.restore()}
                     className="px-3 py-1 bg-green-600 text-white rounded"

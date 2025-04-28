@@ -542,7 +542,7 @@ export class Cube extends Group {
                 current++;
                 setTimeout(() => {
                     requestAnimationFrame(doOneScramble);
-                }, 100);  // Wait before the next rotation
+                }, 10);  // Wait before the next rotation
             });
         };
     
