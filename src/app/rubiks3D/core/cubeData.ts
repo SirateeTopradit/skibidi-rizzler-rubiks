@@ -71,6 +71,7 @@ class CubeData {
     ) {
         this.cubeOrder = cubeOrder;
         this.colors = colors;
+        localStorage.removeItem(`${this.cubeOrder}-Rubik`);
         this.initElements(); // Initialize elements, trying local storage first
     }
 
@@ -103,69 +104,24 @@ class CubeData {
      */
     public initialFinishData() {
         this.elements = [];
-        // Calculate the coordinate extent from the center for the outermost squares
-        const border = (this.cubeOrder * this._size) / 2 - 0.5 * this._size;
-
-        // Generate squares for the Top (Y+) and Bottom (Y-) faces
-        for (let x = -border; x <= border; x += this._size) {
-            for (let z = -border; z <= border; z += this._size) {
-                // Top face (Y+)
-                this.elements.push({
-                    color: this.colors[0],
-                    pos: new Vector3(x, border + this._size * 0.5, z),
-                    normal: new Vector3(0, 1, 0),
-                    withLogo: x === 0 && z === 0, // Center square might have a logo
-                });
-                // Bottom face (Y-)
-                this.elements.push({
-                    color: this.colors[1],
-                    pos: new Vector3(x, -border - this._size * 0.5, z),
-                    normal: new Vector3(0, -1, 0),
-                    withLogo: x === 0 && z === 0,
-                });
-            }
-        }
-
-        // Generate squares for the Left (X-) and Right (X+) faces
-        for (let y = -border; y <= border; y += this._size) {
-            for (let z = -border; z <= border; z += this._size) {
-                // Left face (X-)
-                this.elements.push({
-                    color: this.colors[2],
-                    pos: new Vector3(-border - this._size * 0.5, y, z),
-                    normal: new Vector3(-1, 0, 0),
-                    withLogo: y === 0 && z === 0,
-                });
-                // Right face (X+)
-                this.elements.push({
-                    color: this.colors[3],
-                    pos: new Vector3(border + this._size * 0.5, y, z),
-                    normal: new Vector3(1, 0, 0),
-                    withLogo: y === 0 && z === 0,
-                });
-            }
-        }
-
-        // Generate squares for the Front (Z+) and Back (Z-) faces
-        for (let x = -border; x <= border; x += this._size) {
-            for (let y = -border; y <= border; y += this._size) {
-                // Front face (Z+)
-                this.elements.push({
-                    color: this.colors[4],
-                    pos: new Vector3(x, y, border + this._size * 0.5),
-                    normal: new Vector3(0, 0, 1),
-                    withLogo: x === 0 && y === 0,
-                });
-                // Back face (Z-)
-                this.elements.push({
-                    color: this.colors[5],
-                    pos: new Vector3(x, y, -border - this._size * 0.5),
-                    normal: new Vector3(0, 0, -1),
-                    withLogo: x === 0 && y === 0,
-                });
+    
+        const half = (this.cubeOrder - 1) / 2; // เช่น 3 → 1
+    
+        for (let x = -half; x <= half; x++) {
+            for (let y = -half; y <= half; y++) {
+                for (let z = -half; z <= half; z++) {
+                    // สร้างทุกก้อนใน 3D
+                    this.elements.push({
+                        color: "#ffffff", // ใช้สีขาวเป็น default ไปก่อน
+                        pos: new Vector3(x, y, z),
+                        normal: new Vector3(0, 0, 1), // normal ไม่จำเป็นถ้าไม่ lookAt
+                        withLogo: (x === 0 && y === 0 && z === 0) // ตรงกลางพอดี
+                    });
+                }
             }
         }
     }
+    
 
     /**
      * Saves the current state of the `elements` array to localStorage.
