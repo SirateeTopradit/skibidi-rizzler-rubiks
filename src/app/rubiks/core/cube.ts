@@ -17,6 +17,7 @@ const getTemPos = (square: SquareMesh, squareSize: number) => {
 };
 
 export class Cube extends Group {
+    private imageUrl?: string;
     private data: CubeData;
     public state!: CubeState;
     public get squares() {
@@ -35,9 +36,10 @@ export class Cube extends Group {
         return this.state.validateFinish();
     }
 
-    public constructor(order = 3) {
+    public constructor(order = 3, imageUrl?: string) {
         super();
 
+        this.imageUrl = imageUrl;
         this.data = new CubeData(order);
 
         this.createChildrenByData();
@@ -53,7 +55,8 @@ export class Cube extends Group {
         for (let i = 0; i < this.data.elements.length; i++) {
             const square = createSquare(
                 new Color(this.data.elements[i].color),
-                this.data.elements[i]
+                this.data.elements[i],
+                this.imageUrl
             );
             this.add(square);
         }
@@ -480,9 +483,6 @@ export class Cube extends Group {
         rotateTick();
     }
 
-    
-    
-
     public scrambleSmart(count: number) {
         const axes = [new Vector3(1,0,0), new Vector3(0,1,0), new Vector3(0,0,1)];
         for (let i = 0; i < count; i++) {
@@ -524,7 +524,4 @@ export class Cube extends Group {
         const idx = Math.floor(Math.random() * this.squares.length);
         return this.squares[idx];
     }
-    
-    
-    
 }

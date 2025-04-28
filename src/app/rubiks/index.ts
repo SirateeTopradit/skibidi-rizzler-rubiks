@@ -22,6 +22,7 @@ const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLR
 
 class Rubiks {
     private timerId?: number;
+    private imageUrl?: string;
     private startTime?: number;
     private camera: PerspectiveCamera;
     private scene: Scene;
@@ -66,7 +67,7 @@ class Rubiks {
             this._controls.forEach((control) => control.dispose());
         }
 
-        const cube = new Cube(order);
+        const cube = new Cube(order, this.imageUrl);
         this.scene.add(cube);
         this.cube = cube;
         this.render();
@@ -175,10 +176,13 @@ class Rubiks {
     private render() {
         this.renderer.render(this.scene, this.camera);
     }
-
+    
+    /**
+     * Entrance animation for the cube
+     */
     private startAnimation() {
         const animation = (time: number) => {
-            time /= 1000; // convert to seconds
+            time /= 1000;
             if (this.cube) {
                 if (time < 2) {
                     this.cube.position.z = (-1 + time / 2) * 10;
@@ -186,12 +190,21 @@ class Rubiks {
                     this.cube.position.z = 0;
                 }
             }
-
             this.render();
             requestAnimationFrame(animation);
         };
-
         requestAnimationFrame(animation);
+    }
+
+    /**
+     * Update image texture on squares
+     */
+    public setImage(imageUrl: string) {
+        this.imageUrl = imageUrl;
+        // recreate cube with same order
+        if (this.cube) {
+            this.setOrder(this.cube.order);
+        }
     }
 }
 

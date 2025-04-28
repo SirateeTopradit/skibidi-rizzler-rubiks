@@ -14,7 +14,7 @@ import { CubeElement } from "./cubeData";
 
 const textureLoader = new TextureLoader();
 
-export const createSquare = (color: Color, element: CubeElement) => {
+export const createSquare = (color: Color, element: CubeElement, imageUrl?: string) => {
     const squareShape = new Shape();
     const x = 0,
         y = 0;
@@ -85,12 +85,13 @@ export const createSquare = (color: Color, element: CubeElement) => {
     const posZ = element.pos.z;
     square.position.set(posX, posY, posZ);
 
-    if (element.withLogo) {
-        textureLoader.load("/tungtungtungsahurr.png", (texture) => {
+    if (imageUrl) {
+        textureLoader.load(imageUrl, (texture) => {
             const geo2 = new PlaneGeometry(1, 1, 1);
             const mat3 = new MeshBasicMaterial({
                 map: texture,
                 transparent: true,
+                opacity: 0.5,
             });
             const avatarPlane = new Mesh(geo2, mat3);
             avatarPlane.position.set(0, 0, 0.01);

@@ -4,11 +4,29 @@ import Rubiks from "./rubiks";
 export default function Page() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [rubik, setRubik] = useState<Rubiks | null>(null);
-
+    // selected image URL, persisted in localStorage
+    const [selectedImage, setSelectedImage] = useState<string>("");
+    // Dropdown options for images
+    const images = [
+        { label: 'Brr Brr Patapim', url: '/Brr_Brr_Patapim.jpg' },
+        { label: 'Ballerina Cappuccina', url: '/BallerinaCappuccina.jpg' },
+        { label: 'Cappuccino Assassino', url: '/CappuccinoAssassino.png' },
+        { label: 'Trippi Troppi', url: '/TrippiTroppi.jpg' }
+    ];
     useEffect(() => {
         if (containerRef.current && !rubik) {
             const instance = new Rubiks(containerRef.current);
             setRubik(instance);
+        }
+    }, [rubik]);
+    // initialize selected image from localStorage and apply to rubik
+    useEffect(() => {
+        if (rubik) {
+            const saved = localStorage.getItem('rubiksImage') || '';
+            if (saved) {
+                setSelectedImage(saved);
+                rubik.setImage(saved);
+            }
         }
     }, [rubik]);
     return (
@@ -53,6 +71,22 @@ export default function Page() {
                 >
                     Reset
                 </button>
+                {/* Dropdown to select image */}
+                <select
+                    value={selectedImage}
+                    onChange={e => {
+                        const url = e.target.value;
+                        setSelectedImage(url);
+                        localStorage.setItem('rubiksImage', url);
+                        rubik?.setImage(url);
+                    }}
+                    className="px-2 py-1 bg-black bg-opacity-50 text-white rounded"
+                >
+                    <option value="">Select Image</option>
+                    {images.map(img => (
+                        <option key={img.url} value={img.url}>{img.label}</option>
+                    ))}
+                </select>
             </div>
         </div>
     );
