@@ -763,7 +763,7 @@ export class Cube extends Group {
                 // Schedule the next rotation after a short delay
                 setTimeout(() => {
                     requestAnimationFrame(doOneScramble);
-                }, 100); // Wait before the next rotation
+                }, 10);  // Wait before the next rotation
             });
         };
 

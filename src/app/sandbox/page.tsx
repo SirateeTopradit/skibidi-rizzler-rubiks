@@ -108,16 +108,11 @@ export default function Page() {
     useEffect(() => {
         // Ensure the container exists and the Rubik instance is not already set
         if (containerRef.current && !rubik) {
-            const instance = new Rubiks(containerRef.current); // Create new instance
-            setRubik(instance); // Store the instance in state
+            const instance = new Rubiks(containerRef.current);
+            setRubik(instance);
         }
-        // No cleanup needed here as the Rubiks instance manages its own listeners internally
-    }, [rubik]); // Dependency array includes rubik to prevent re-initialization
-
-    /**
-     * Effect hook to load the selected image from localStorage and apply it
-     * to the Rubik's cube instance once the instance is available.
-     */
+    }, [rubik]);
+    // initialize selected image from localStorage and apply to rubik
     useEffect(() => {
         if (rubik) {
             const saved = localStorage.getItem("rubiksImage") || ""; // Get saved image URL
@@ -134,12 +129,8 @@ export default function Page() {
     );
 
     return (
-        // Main container with background color
-        <div
-            className="w-screen h-screen relative flex"
-            style={{ backgroundColor: "#9e7a68" }}
-        >
-            {/* Timer display positioned absolutely in the center, behind other elements */}
+        <div className="w-screen h-screen relative flex" style={{ backgroundColor: '#9e7a68' }}>
+            {/* Changed div to center the timer and place it behind other elements */}
             <div className="absolute inset-0 z-0 flex justify-center text-white">
                 <span
                     id="timer" // ID used by Rubiks class to update time
@@ -150,16 +141,14 @@ export default function Page() {
             </div>
             {/* Container for the Rubik's cube canvas, takes up remaining space */}
             <div ref={containerRef} className="flex-grow z-1" />
-            {/* Controls container positioned absolutely at the top-right */}
+            {/* Keep controls on top */}
             <div className="absolute top-4 right-4 z-10 flex space-x-2">
-                {/* Button to trigger animated scramble */}
                 <button
                     onClick={() => rubik?.disorder2()}
-                    className="px-3 py-1 bg-yellow-600 text-white rounded"
+                    className="px-3 py-1 bg-blue-600 text-white rounded"
                 >
-                    test {/* Placeholder text */}
+                    test
                 </button>
-                {/* Button to trigger instant scramble */}
                 <button
                     onClick={() => rubik?.disorder()}
                     className="px-3 py-1 bg-red-600 text-white rounded"
@@ -173,7 +162,6 @@ export default function Page() {
                 >
                     Start
                 </button>
-                {/* Button to reset the cube to solved state */}
                 <button
                     onClick={() => rubik?.restore()}
                     className="px-3 py-1 bg-green-600 text-white rounded"
