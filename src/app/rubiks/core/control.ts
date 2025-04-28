@@ -5,7 +5,6 @@ import {
     Vector2,
     Vector3,
     WebGLRenderer,
-    MathUtils, // Import MathUtils for degree to radian conversion
 } from "three";
 import { Cube } from "./cube";
 import { rotateAroundWorldAxis } from "../util/transform";
@@ -261,79 +260,5 @@ export class TouchControl extends Control {
         this.domElement.removeEventListener("touchend", this.touchEnd);
     }
 }
-
-/**
- * Gyroscope-based user control for the Rubik's Cube.
- */
-export class GyroControl extends Control {
-    private lastBeta: number | null = null;
-    private lastGamma: number | null = null;
-    private orientationHandler: (event: DeviceOrientationEvent) => void;
-
-    constructor(
-        camera: PerspectiveCamera,
-        scene: Scene,
-        renderer: WebGLRenderer,
-        cube: Cube
-    ) {
-        super(camera, scene, renderer, cube);
-        this.orientationHandler = this.handleOrientation.bind(this);
-        this.init();
-    }
-
-    private handleOrientation(event: DeviceOrientationEvent) {
-        // alpha: rotation around z-axis (compass direction) - typically not used for direct cube rotation
-        // beta: rotation around x-axis (front/back tilt)
-        // gamma: rotation around y-axis (left/right tilt)
-
-        if (event.beta === null || event.gamma === null) {
-            console.warn("Gyroscope data not available.");
-            this.dispose(); // Stop listening if data is unavailable
-            return;
-        }
-
-        const betaRad = MathUtils.degToRad(event.beta);
-        const gammaRad = MathUtils.degToRad(event.gamma);
-
-        // Calculate delta rotation
-        const deltaBeta = this.lastBeta !== null ? betaRad - this.lastBeta : 0;
-        const deltaGamma = this.lastGamma !== null ? gammaRad - this.lastGamma : 0;
-
-        // Apply rotation - Adjust sensitivity/axis mapping as needed
-        // Rotating around world X based on gamma (left/right tilt)
-        if (Math.abs(deltaGamma) > 0.01) { // Add threshold to avoid jitter
-            rotateAroundWorldAxis(this.cube, new Vector3(1, 0, 0), deltaGamma * 0.5); // Adjust multiplier for sensitivity
-        }
-        // Rotating around world Y based on beta (front/back tilt)
-        if (Math.abs(deltaBeta) > 0.01) { // Add threshold to avoid jitter
-             rotateAroundWorldAxis(this.cube, new Vector3(0, 1, 0), deltaBeta * 0.5); // Adjust multiplier for sensitivity
-        }
-
-
-        this.lastBeta = betaRad;
-        this.lastGamma = gammaRad;
-
-        this.renderer.render(this.scene, this.camera);
-    }
-
-    public init(): void {
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', this.orientationHandler, true);
-            console.log("Gyroscope control initialized.");
-        } else {
-            console.warn("DeviceOrientationEvent not supported on this device/browser.");
-        }
-    }
-
-    public dispose(): void {
-        window.removeEventListener('deviceorientation', this.orientationHandler, true);
-        console.log("Gyroscope control disposed.");
-    }
-
-    protected operateStart(): void {}
-    protected operateDrag(): void {}
-    protected operateEnd(): void {}
-}
-
 
 export default Control;
