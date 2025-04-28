@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Link from "next/link";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls } from "@react-three/drei";
 
@@ -15,24 +14,36 @@ function StylizedPlanet() {
 
 export default function LandingPage() {
     return (
-        <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-black to-blue-900">
-            {/* Sidebar navigation */}
-            <nav className=" text-white p-6 md:w-1/4">
-                <ul className="flex flex-row md:flex-col justify-around md:justify-start space-x-4 md:space-x-0 md:space-y-4">
+        <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-black to-blue-950">
+            {/* Sidebar navigation - Center content */}
+            <nav className="text-white p-6 md:w-1/2 flex flex-col items-center justify-center h-full">
+                <h1 className="text-4xl font-bold mb-8 [text-shadow:_-3px_-3px_0_#2563eb,_3px_-3px_0_#2563eb,_-3px_3px_0_#2563eb,_3px_3px_0_#2563eb]">
+                    Skibidi Rizzler Rubiks
+                </h1>
+                <ul className="flex flex-col items-center space-y-4">
                     <li>
-                        <Link href="/challenge" className="hover:text-blue-300">
+                        <a
+                            href="/challenge"
+                            className="text-2xl hover:text-blue-300"
+                        >
                             Challenge
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link href="/sandbox" className="hover:text-blue-300">
+                        <a
+                            href="/sandbox"
+                            className="text-2xl hover:text-blue-300"
+                        >
                             Sandbox
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link href="/settings" className="hover:text-blue-300">
+                        <a
+                            href="/settings"
+                            className="text-2xl hover:text-blue-300"
+                        >
                             Settings
-                        </Link>
+                        </a>
                     </li>
                 </ul>
             </nav>
