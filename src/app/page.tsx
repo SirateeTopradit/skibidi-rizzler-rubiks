@@ -6,13 +6,44 @@ export default function Page() {
     const [rubik, setRubik] = useState<Rubiks | null>(null);
     // selected image URL, persisted in localStorage
     const [selectedImage, setSelectedImage] = useState<string>("");
-    // Dropdown options for images
-    const images = [
+    // default dropdown images
+    const defaultImages = [
         { label: 'Brr Brr Patapim', url: '/Brr_Brr_Patapim.jpg' },
         { label: 'Ballerina Cappuccina', url: '/BallerinaCappuccina.jpg' },
         { label: 'Cappuccino Assassino', url: '/CappuccinoAssassino.png' },
         { label: 'Trippi Troppi', url: '/TrippiTroppi.jpg' }
     ];
+    const [uploadedImages, setUploadedImages] = useState<{ label: string; url: string }[]>([]);
+    const [images, setImages] = useState(defaultImages);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // load any previously uploaded images
+    useEffect(() => {
+        const saved = localStorage.getItem('rubiksUploadedImages') || '[]';
+        setUploadedImages(JSON.parse(saved));
+    }, []);
+    useEffect(() => {
+        setImages([...defaultImages, ...uploadedImages]);
+    }, [uploadedImages]);
+
+    const handleUploadClick = () => fileInputRef.current?.click();
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const url = reader.result as string;
+            const newImg = { label: file.name, url };
+            const updated = [...uploadedImages, newImg];
+            setUploadedImages(updated);
+            localStorage.setItem('rubiksUploadedImages', JSON.stringify(updated));
+            setSelectedImage(url);
+            localStorage.setItem('rubiksImage', url);
+            rubik?.setImage(url);
+        };
+        reader.readAsDataURL(file);
+    };
+
     useEffect(() => {
         if (containerRef.current && !rubik) {
             const instance = new Rubiks(containerRef.current);
@@ -71,7 +102,9 @@ export default function Page() {
                 >
                     Reset
                 </button>
-                {/* Dropdown to select image */}
+                <button onClick={handleUploadClick} className="px-3 py-1 bg-gray-600 text-white rounded">
+                    Upload Image
+                </button>
                 <select
                     value={selectedImage}
                     onChange={e => {
@@ -87,6 +120,13 @@ export default function Page() {
                         <option key={img.url} value={img.url}>{img.label}</option>
                     ))}
                 </select>
+                <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
             </div>
         </div>
     );
