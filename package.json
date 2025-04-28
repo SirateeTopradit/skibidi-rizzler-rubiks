@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-three/drei": "^10.0.6",
+    "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
     "canvas-confetti": "^1.9.3",
     "next": "15.3.1",
