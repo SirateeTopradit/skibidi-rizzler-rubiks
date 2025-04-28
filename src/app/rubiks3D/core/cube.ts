@@ -5,6 +5,9 @@ import { ndcToScreen } from "../util/transform";
 import CubeData from "./cubeData";
 import CubeState, { RotateDirection } from "./cubeState";
 import { createSquare, SquareMesh } from "./square";
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CSG } from 'three-csg-ts';
 
 const getTemPos = (square: SquareMesh, squareSize: number) => {
     const moveVect = square.element.normal
@@ -69,13 +72,37 @@ export class Cube extends Group {
 
         for (let i = 0; i < this.data.elements.length; i++) {
             const element = this.data.elements[i];
-            const square = await createSquare(
-                new Color(element.color),
-                element,
-                '/models/block.glb',
-            );
-            this.add(square);
-            squares.push(square);
+            if(i%6 == 0){
+                const square = await createSquare(new Color(element.color),element,'/models/a0.glb',);
+                this.add(square);
+                squares.push(square);
+            }else if(i%6 == 1){
+                const square = await createSquare(new Color(element.color),element,'/models/a1.glb',);
+                this.add(square);
+                squares.push(square);    
+            }else if(i%6 == 2){
+                const square = await createSquare(new Color(element.color),element,'/models/a2.glb',);
+                this.add(square);
+                squares.push(square);    
+            }else if(i%6 == 3){
+                const square = await createSquare(new Color(element.color),element,'/models/a3.glb',);
+                this.add(square);
+                squares.push(square);    
+            }else if(i%6 == 4){
+                const square = await createSquare(new Color(element.color),element,'/models/a4.glb',);
+                this.add(square);
+                squares.push(square);    
+            }else if(i%6 == 5){
+                const square = await createSquare(new Color(element.color),element,'/models/a5.glb',);
+                this.add(square);
+                squares.push(square);    
+            }
+            else{
+                const square = await createSquare(new Color(element.color),element,'/models/a1.glb',);
+                this.add(square);
+                squares.push(square);
+            }
+            
         }
 
         this.state = new CubeState(squares);
@@ -332,6 +359,8 @@ export class Cube extends Group {
                 rotateSquares[i].updateMatrix(); // Update the square's matrix for rendering
             }
         }
+    
+         
 
     public async scrambleSmartAnimated(count: number, onComplete?: () => void) {
         await this.awaitReady();
