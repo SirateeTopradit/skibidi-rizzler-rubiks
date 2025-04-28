@@ -1,14 +1,27 @@
-import {PerspectiveCamera, Scene, WebGLRenderer, PMREMGenerator, FloatType} from "three";
+import {
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer,
+    PMREMGenerator,
+    FloatType,
+} from "three";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import createCamera from "./components/camera";
 import createScene from "./components/scene";
 import createRenderer from "./components/renderer";
-import {Cube} from "./core/cube";
-import Control, {MouseControl, TouchControl} from "./core/control";
+import { Cube } from "./core/cube";
+import Control, { MouseControl, TouchControl } from "./core/control";
 import { setTime, setFinish } from "./core/statusbar";
-import confetti from 'canvas-confetti';
+import confetti from "canvas-confetti";
 
-const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
+// add leaderboard entry type definition
+type LeaderboardEntry = { time: number; date: string; image: string };
+
+const setSize = (
+    container: Element,
+    camera: PerspectiveCamera,
+    renderer: WebGLRenderer
+) => {
     // Set the camera's aspect ratio
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
@@ -39,7 +52,7 @@ class Rubiks {
         new RGBELoader()
             .setDataType(FloatType)
             .load(
-                'https://rawcdn.githack.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr',
+                "https://rawcdn.githack.com/mrdoob/three.js/dev/examples/textures/equirectangular/royal_esplanade_1k.hdr",
                 (hdr) => {
                     const envMap = pmrem.fromEquirectangular(hdr).texture;
                     this.scene.environment = envMap;
@@ -74,9 +87,15 @@ class Rubiks {
 
         const winW = this.renderer.domElement.clientWidth;
         const winH = this.renderer.domElement.clientHeight;
-        const coarseSize = cube.getCoarseCubeSize(this.camera, {w: winW, h: winH});
+        const coarseSize = cube.getCoarseCubeSize(this.camera, {
+            w: winW,
+            h: winH,
+        });
 
-        const ratio = Math.max(2.2 / (winW / coarseSize), 2.2 / (winH / coarseSize));
+        const ratio = Math.max(
+            2.2 / (winW / coarseSize),
+            2.2 / (winH / coarseSize)
+        );
         this.camera.position.z *= ratio;
         this._controls.push(
             new MouseControl(this.camera, this.scene, this.renderer, cube),
@@ -91,8 +110,6 @@ class Rubiks {
      */
     public disorder() {
         if (this.cube) {
-            const winW = this.renderer.domElement.clientWidth;
-            const winH = this.renderer.domElement.clientHeight;
             this.cube.scrambleSmart(20);
             this.render();
             // start timer
@@ -104,14 +121,12 @@ class Rubiks {
 
     public disorder2() {
         if (this.cube) {
-            const winW = this.renderer.domElement.clientWidth;
-            const winH = this.renderer.domElement.clientHeight;
             this.cube.scrambleSmartAnimated(1);
             this.render();
             // start timer
             setFinish(false);
             setTime(0);
-            
+
             const waitForFirstRotation = () => {
                 if (this.cube?.state.inRotation) {
                     this.startTimer();
@@ -152,18 +167,57 @@ class Rubiks {
             if (this.cube?.finish) {
                 clearInterval(this.timerId!);
                 setFinish(true); // show finish message when solved
+
+                // save to leaderboard in localStorage
+                const leaderboardKey = "rubiksLeaderboard";
+                const savedBoard: LeaderboardEntry[] = JSON.parse(
+                    localStorage.getItem(leaderboardKey) || "[]"
+                ) as LeaderboardEntry[];
+                const imageUrl = localStorage.getItem("rubiksImage") || "";
+                savedBoard.push({
+                    time: elapsed,
+                    date: new Date().toISOString(),
+                    image: imageUrl,
+                });
+                savedBoard.sort((a, b) => a.time - b.time);
+                const topBoard: LeaderboardEntry[] = savedBoard.slice(0, 10); // top 10
+                localStorage.setItem(leaderboardKey, JSON.stringify(topBoard));
+
                 // celebrate with confetti
                 confetti({ particleCount: 500, spread: 200 });
                 // congratulations effect and auto reset after solving
                 const overlay = document.createElement("div");
                 overlay.id = "congrats-overlay";
-                overlay.style.cssText = 
+                overlay.style.cssText =
                     "position:fixed;top:0;left:0;width:100%;height:100%;" +
-                    "display:flex;align-items:center;justify-content:center;text-align:center;" +
-                    "font-size:3rem;color:#fff;background:rgba(0,0,0,0.5);z-index:1000;";
-                // show final elapsed time on the overlay
-                const finalTime = document.getElementById("timer")?.innerText || "";
-                overlay.innerHTML = `🎉 Congratulations! 🎉<br/>${finalTime}`;
+                    "display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;" +
+                    "font-size:1.5rem;color:#fff;padding:2rem;background:rgba(0,0,0,0.5);z-index:1000;";
+                // show final elapsed time and best record
+                const finalTime =
+                    document.getElementById("timer")?.innerText || "";
+                // build leaderboard table
+                const rows = topBoard
+                    .map((entry, i) => {
+                        const mins = String(
+                            Math.floor(entry.time / 60)
+                        ).padStart(2, "0");
+                        const secs = String(
+                            Math.floor(entry.time % 60)
+                        ).padStart(2, "0");
+                        const date = new Date(entry.date).toLocaleDateString();
+                        const name = entry.image.split("/").pop() || "Default";
+                        return `<tr><td>${
+                            i + 1
+                        }</td><td>${mins}:${secs}</td><td>${date}</td><td>${name}</td></tr>`;
+                    })
+                    .join("");
+                overlay.innerHTML =
+                    `🎉 Congratulations! You've solved the cube! 🎉<br/>` +
+                    `Your time: ${finalTime}<br/>` +
+                    `<div style="overflow:auto; max-height:200px; margin-top:1rem;">` +
+                    `<table style="width:100%;border-collapse:collapse;text-align:left;">` +
+                    `<thead><tr><th>#</th><th>Time</th><th>Date</th><th>Image</th></tr></thead>` +
+                    `<tbody>${rows}</tbody></table></div>`;
                 document.body.appendChild(overlay);
                 setTimeout(() => {
                     document.body.removeChild(overlay);
@@ -176,7 +230,7 @@ class Rubiks {
     private render() {
         this.renderer.render(this.scene, this.camera);
     }
-    
+
     /**
      * Entrance animation for the cube
      */

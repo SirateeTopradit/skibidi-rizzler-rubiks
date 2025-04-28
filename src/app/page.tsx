@@ -1,12 +1,22 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Rubiks from "./rubiks";
+// leaderboard entry type
+type LeaderboardEntry = { time: number; date: string; image: string };
 export default function Page() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [rubik, setRubik] = useState<Rubiks | null>(null);
+    // leaderboard state
+    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     // selected image URL, persisted in localStorage
     const [selectedImage, setSelectedImage] = useState<string>("");
     // default dropdown images
+    
+    // load leaderboard on mount
+    useEffect(() => {
+        const data = localStorage.getItem('rubiksLeaderboard') || '[]';
+        setLeaderboard(JSON.parse(data));
+    }, []);
     const defaultImages = [
         { label: 'Brr Brr Patapim', url: '/Brr_Brr_Patapim.jpg' },
         { label: 'Ballerina Cappuccina', url: '/BallerinaCappuccina.jpg' },
@@ -60,6 +70,10 @@ export default function Page() {
             }
         }
     }, [rubik]);
+
+    // only show entries for selected image
+    const filteredLeaderboard = leaderboard.filter(entry => entry.image === selectedImage);
+
     return (
         <div className="w-screen h-screen relative flex">
             <div className="absolute top-4 left-4 z-10 flex space-x-4 items-center text-white">
@@ -128,6 +142,33 @@ export default function Page() {
                     onChange={handleFileChange}
                 />
             </div>
+            {/* leaderboard table */}
+            {filteredLeaderboard.length > 0 && (
+              <div className="absolute bottom-4 left-4 z-10 bg-black bg-opacity-50 text-white p-4 rounded max-h-64 overflow-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr><th className="px-1">#</th><th className="px-1">Time</th><th className="px-1">Date</th><th className="px-1">Image</th></tr>
+                  </thead>
+                  <tbody>
+                    {filteredLeaderboard.map((entry, i) => {
+                      const mins = Math.floor(entry.time / 60);
+                      const secs = Math.floor(entry.time % 60);
+                      const timeStr = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                      const dateStr = new Date(entry.date).toLocaleDateString();
+                      const name = entry.image.split('/').pop() || 'Default';
+                      return (
+                        <tr key={i} className="border-t border-gray-600">
+                          <td className="px-1">{i+1}</td>
+                          <td className="px-1">{timeStr}</td>
+                          <td className="px-1">{dateStr}</td>
+                          <td className="px-1">{name}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
         </div>
     );
 }
