@@ -427,9 +427,6 @@ export class Cube extends Group {
             this.rotateAnimationId = null;
         }
 
-        const squareNormal = controlSquare.element.normal;
-        const squarePos = controlSquare.element.pos;
-
         const rotateSquares: SquareMesh[] = [];
         const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
 

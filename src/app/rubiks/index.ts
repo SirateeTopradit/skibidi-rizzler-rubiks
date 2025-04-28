@@ -85,16 +85,12 @@ class Rubiks {
         this.cube = cube;
         this.render();
 
-        const winW = this.renderer.domElement.clientWidth;
-        const winH = this.renderer.domElement.clientHeight;
-        const coarseSize = cube.getCoarseCubeSize(this.camera, {
-            w: winW,
-            h: winH,
-        });
-
+        // adjust camera based on cube size and renderer dimensions
+        const { clientWidth: width, clientHeight: height } = this.renderer.domElement;
+        const coarseSize = cube.getCoarseCubeSize(this.camera, { w: width, h: height });
         const ratio = Math.max(
-            2.2 / (winW / coarseSize),
-            2.2 / (winH / coarseSize)
+            2.2 / (width / coarseSize),
+            2.2 / (height / coarseSize)
         );
         this.camera.position.z *= ratio;
         this._controls.push(
