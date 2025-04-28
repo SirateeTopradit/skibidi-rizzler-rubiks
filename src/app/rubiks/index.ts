@@ -1,16 +1,10 @@
-import {
-    PerspectiveCamera,
-    Scene,
-    WebGLRenderer,
-    PMREMGenerator,
-    FloatType,
-} from "three";
+import Control, { MouseControl, TouchControl, GyroControl } from "./core/control"; // Import GyroControl
+import { PerspectiveCamera, Scene, WebGLRenderer, PMREMGenerator, FloatType } from "three";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import createCamera from "./components/camera";
-import createScene from "./components/scene";
 import createRenderer from "./components/renderer";
+import createScene from "./components/scene";
 import { Cube } from "./core/cube";
-import Control, { MouseControl, TouchControl } from "./core/control";
 import { setTime, setFinish } from "./core/statusbar";
 import confetti from "canvas-confetti";
 
@@ -74,6 +68,20 @@ class Rubiks {
         if (savedImage) this.imageUrl = savedImage;
         this.setOrder(3);
 
+        // Initialize controls
+        this._controls.push(
+            new MouseControl(this.camera, this.scene, this.renderer, this.cube!)
+        );
+        this._controls.push(
+            new TouchControl(this.camera, this.scene, this.renderer, this.cube!)
+        );
+
+        // Conditionally add GyroControl based on localStorage setting
+        const gyroEnabled = localStorage.getItem("rubiksGyroEnabled") === "true";
+        if (gyroEnabled) {
+            this.enableGyro(true); // Use a method to handle enabling/disabling
+        }
+
         this.startAnimation();
         this.disorder();
     }
@@ -97,10 +105,6 @@ class Rubiks {
             2.2 / (height / coarseSize)
         );
         this.camera.position.z *= ratio;
-        this._controls.push(
-            new MouseControl(this.camera, this.scene, this.renderer, cube),
-            new TouchControl(this.camera, this.scene, this.renderer, cube)
-        );
 
         this.render();
     }
@@ -261,6 +265,22 @@ class Rubiks {
         // recreate cube with same order
         if (this.cube) {
             this.setOrder(this.cube.order);
+        }
+    }
+
+    /**
+     * Enable or disable Gyroscope control.
+     */
+    public enableGyro(enable: boolean) {
+        const existingGyro = this._controls.find(c => c instanceof GyroControl);
+        if (enable && !existingGyro) {
+            const gyroControl = new GyroControl(this.camera, this.scene, this.renderer, this.cube!);
+            this._controls.push(gyroControl);
+            console.log("Gyro enabled");
+        } else if (!enable && existingGyro) {
+            existingGyro.dispose();
+            this._controls = this._controls.filter(c => !(c instanceof GyroControl));
+            console.log("Gyro disabled");
         }
     }
 }
