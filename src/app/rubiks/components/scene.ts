@@ -1,15 +1,13 @@
 import {
-    Color,
     Scene,
-    ColorRepresentation,
     HemisphereLight,
     DirectionalLight,
 } from "three";
 
-const createScene = (bgColor: ColorRepresentation) => {
+const createScene = () => {
     const scene = new Scene();
 
-    scene.background = new Color(bgColor);
+
 
     const hemi = new HemisphereLight(0xffffff, 0x444444, 0.6);
     scene.add(hemi);

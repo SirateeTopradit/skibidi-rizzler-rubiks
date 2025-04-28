@@ -44,7 +44,7 @@ class Rubiks {
     private _controls: Control[] = [];
     public constructor(container: Element) {
         this.camera = createCamera();
-        this.scene = createScene("#9e7a68");
+        this.scene = createScene();
         this.renderer = createRenderer();
         // load environment HDR and apply for PBR reflections
         const pmrem = new PMREMGenerator(this.renderer);
@@ -69,9 +69,13 @@ class Rubiks {
             this.render();
         });
         setSize(container, this.camera, this.renderer);
+        // initialize with saved image so cube loads image without manual reload
+        const savedImage = localStorage.getItem('rubiksImage');
+        if (savedImage) this.imageUrl = savedImage;
         this.setOrder(3);
 
         this.startAnimation();
+        this.disorder();
     }
 
     public setOrder(order: number) {
@@ -110,14 +114,21 @@ class Rubiks {
             this.render();
             // start timer
             setFinish(false);
-            setTime(0);
-            this.startTimer();
+            setTime(0)
+            const waitForFirstRotation = () => {
+                if (this.cube?.state.inRotation) {
+                    this.startTimer();
+                } else {
+                    requestAnimationFrame(waitForFirstRotation);
+                }
+            };
+            requestAnimationFrame(waitForFirstRotation);
         }
     }
 
     public disorder2() {
         if (this.cube) {
-            this.cube.scrambleSmartAnimated(1);
+            this.cube.scrambleSmartAnimated(20);
             this.render();
             // start timer
             setFinish(false);
@@ -192,28 +203,24 @@ class Rubiks {
                 const finalTime =
                     document.getElementById("timer")?.innerText || "";
                 // build leaderboard table
-                const rows = topBoard
-                    .map((entry, i) => {
-                        const mins = String(
-                            Math.floor(entry.time / 60)
-                        ).padStart(2, "0");
-                        const secs = String(
-                            Math.floor(entry.time % 60)
-                        ).padStart(2, "0");
-                        const date = new Date(entry.date).toLocaleDateString();
-                        const name = entry.image.split("/").pop() || "Default";
-                        return `<tr><td>${
-                            i + 1
-                        }</td><td>${mins}:${secs}</td><td>${date}</td><td>${name}</td></tr>`;
-                    })
-                    .join("");
+                // const rows = topBoard
+                //     .map((entry, i) => {
+                //         const mins = String(
+                //             Math.floor(entry.time / 60)
+                //         ).padStart(2, "0");
+                //         const secs = String(
+                //             Math.floor(entry.time % 60)
+                //         ).padStart(2, "0");
+                //         const date = new Date(entry.date).toLocaleDateString();
+                //         const name = entry.image.split("/").pop() || "Default";
+                //         return `<tr><td>${
+                //             i + 1
+                //         }</td><td>${mins}:${secs}</td><td>${date}</td><td>${name}</td></tr>`;
+                //     })
+                //     .join("");
                 overlay.innerHTML =
                     `🎉 Congratulations! You've solved the cube! 🎉<br/>` +
-                    `Your time: ${finalTime}<br/>` +
-                    `<div style="overflow:auto; max-height:200px; margin-top:1rem;">` +
-                    `<table style="width:100%;border-collapse:collapse;text-align:left;">` +
-                    `<thead><tr><th>#</th><th>Time</th><th>Date</th><th>Image</th></tr></thead>` +
-                    `<tbody>${rows}</tbody></table></div>`;
+                    `${finalTime}<br/>`
                 document.body.appendChild(overlay);
                 setTimeout(() => {
                     document.body.removeChild(overlay);

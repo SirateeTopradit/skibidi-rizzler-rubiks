@@ -480,13 +480,47 @@ export class Cube extends Group {
         rotateTick();
     }
 
+    public rotatePlane2(controlSquare: SquareMesh, axis: Vector3, angle90: number) {
+        // 2. หา plane (ระนาบ) ที่จะหมุน
+        const rotateSquares: SquareMesh[] = [];
+        const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
+    
+        for (let i = 0; i < this.squares.length; i++) {
+            const squareTemPos = getTemPos(this.squares[i], this.data.elementSize);
+            const squareVec = controlTemPos.clone().sub(squareTemPos);
+            if (squareVec.dot(axis) === 0) {
+                rotateSquares.push(this.squares[i]);
+            }
+        }
+    
+        // 3. หมุนจริง
+        const rotateMat = new Matrix4();
+        rotateMat.makeRotationAxis(axis.clone().normalize(), angle90 * (Math.PI * 0.5)); // angle90 = +1, -1, +2, etc
+    
+        for (let i = 0; i < rotateSquares.length; i++) {
+            rotateSquares[i].applyMatrix4(rotateMat);
+            rotateSquares[i].updateMatrix();
+        }
+    
+        // 4. อัปเดตสถานะหลังหมุน
+        this.state.activeSquares = rotateSquares;
+        this.state.rotateAxisLocal = axis;
+        this.state.rotateAnglePI = angle90 * (Math.PI * 0.5);
+        this.updateStateAfterRotate();
+        this.state.inRotation = false;
+    
+        // 5. save ข้อมูลด้วย (optional)
+        this.data.saveDataToLocal();
+        setFinish(this.finish);
+    }
+
     public scrambleSmart(count: number) {
         const axes = [new Vector3(1,0,0), new Vector3(0,1,0), new Vector3(0,0,1)];
         for (let i = 0; i < count; i++) {
             const controlSquare = this.getRandomControlSquare();
             const axis = axes[Math.floor(Math.random() * axes.length)];
             const angle = Math.random() > 0.5 ? 1 : -1;
-            this.rotatePlane(controlSquare, axis, angle);
+            this.rotatePlane2(controlSquare, axis, angle);
         }
     }
 
