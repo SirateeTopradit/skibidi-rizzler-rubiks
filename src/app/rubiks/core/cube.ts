@@ -34,11 +34,10 @@ export class Cube extends Group {
     public get finish() {
         return this.state.validateFinish();
     }
-    private materialType: string;
-    public constructor(order = 3, materialType = 'plastic') {
+
+    public constructor(order = 3) {
         super();
-        this.materialType = materialType;
-         
+
         this.data = new CubeData(order);
 
         this.createChildrenByData();
@@ -52,8 +51,10 @@ export class Cube extends Group {
         this.remove(...this.children);
 
         for (let i = 0; i < this.data.elements.length; i++) {
-            const elem = this.data.elements[i];
-            const square = createSquare(new Color(elem.color), elem, this.materialType);
+            const square = createSquare(
+                new Color(this.data.elements[i].color),
+                this.data.elements[i]
+            );
             this.add(square);
         }
 
@@ -480,6 +481,7 @@ export class Cube extends Group {
     }
 
     
+    
 
     public scrambleSmart(count: number) {
         const axes = [new Vector3(1,0,0), new Vector3(0,1,0), new Vector3(0,0,1)];
@@ -522,4 +524,7 @@ export class Cube extends Group {
         const idx = Math.floor(Math.random() * this.squares.length);
         return this.squares[idx];
     }
+    
+    
+    
 }
