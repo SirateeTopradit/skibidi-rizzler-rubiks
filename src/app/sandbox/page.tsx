@@ -44,6 +44,8 @@ export default function Page() {
     const [images, setImages] = useState(defaultImages);
     /** Ref for the hidden file input element used for image uploads. */
     const fileInputRef = useRef<HTMLInputElement>(null);
+    /** State to control the visibility of the hamburger menu. */
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     /** Next.js router instance for navigation. */
     const router = useRouter();
@@ -141,69 +143,77 @@ export default function Page() {
             </div>
             {/* Container for the Rubik's cube canvas, takes up remaining space */}
             <div ref={containerRef} className="flex-grow z-1" />
-            {/* Keep controls on top */}
-            <div className="absolute top-4 right-4 z-10 flex space-x-2">
+            {/* Hamburger Menu Button */}
+            <div className="absolute top-4 right-4 z-20">
                 <button
-                    onClick={() => rubik?.disorder2()}
-                    className="px-3 py-1 bg-blue-600 text-white rounded"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="p-2 bg-gray-700 text-white rounded focus:outline-none"
                 >
-                    test
+                    {/* Simple hamburger icon */}
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
                 </button>
-                <button
-                    onClick={() => rubik?.disorder()}
-                    className="px-3 py-1 bg-red-600 text-white rounded"
-                >
-                    tungtungtungsahurr {/* Placeholder text */}
-                </button>
-                {/* Button to trigger instant scramble (labeled as Start) */}
-                <button
-                    onClick={() => rubik?.disorder()}
-                    className="px-3 py-1 bg-blue-600 text-white rounded"
-                >
-                    Start
-                </button>
-                <button
-                    onClick={() => rubik?.restore()}
-                    className="px-3 py-1 bg-green-600 text-white rounded"
-                >
-                    Reset
-                </button>
-                {/* Button to trigger the file upload dialog */}
-                <button
-                    onClick={handleUploadClick}
-                    className="px-3 py-1 bg-gray-600 text-white rounded"
-                >
-                    Upload Image
-                </button>
-                {/* Dropdown for selecting the cube face image */}
-                <select
-                    value={selectedImage}
-                    onChange={(e) => {
-                        const url = e.target.value;
-                        setSelectedImage(url); // Update state
-                        localStorage.setItem("rubiksImage", url); // Persist selection
-                        rubik?.setImage(url); // Apply to cube
-                    }}
-                    className="px-2 py-1 bg-black bg-opacity-50 text-white rounded"
-                >
-                    <option value="">Select Image</option>{" "}
-                    {/* Default option */}
-                    {/* Map through available images (default + uploaded) */}
-                    {images.map((img) => (
-                        <option key={img.url} value={img.url}>
-                            {img.label} {/* Display image label */}
-                        </option>
-                    ))}
-                </select>
-                {/* Hidden file input element */}
-                <input
-                    type="file"
-                    accept="image/*" // Accept only image files
-                    className="hidden" // Hide the default input UI
-                    ref={fileInputRef} // Assign ref
-                    onChange={handleFileChange} // Attach change handler
-                />
             </div>
+
+            {/* Menu Panel - Conditionally rendered */}
+            {isMenuOpen && (
+                <div className="absolute top-16 right-4 z-10 bg-black bg-opacity-75 text-white p-4 rounded shadow-lg flex flex-col space-y-2">
+                    <button
+                        onClick={() => { rubik?.disorder2(); setIsMenuOpen(false); }}
+                        className="px-3 py-1 bg-yellow-600 text-white rounded text-left"
+                    >
+                        Test Scramble
+                    </button>
+                    <button
+                        onClick={() => { rubik?.disorder(); setIsMenuOpen(false); }}
+                        className="px-3 py-1 bg-blue-600 text-white rounded text-left"
+                    >
+                        Start
+                    </button>
+                    <button
+                        onClick={() => { rubik?.restore(); setIsMenuOpen(false); }}
+                        className="px-3 py-1 bg-green-600 text-white rounded text-left"
+                    >
+                        Reset
+                    </button>
+                    <button
+                        onClick={() => { handleUploadClick(); setIsMenuOpen(false); }}
+                        className="px-3 py-1 bg-gray-600 text-white rounded text-left"
+                    >
+                        Upload Image
+                    </button>
+                    <select
+                        value={selectedImage}
+                        onChange={(e) => {
+                            const url = e.target.value;
+                            setSelectedImage(url);
+                            localStorage.setItem("rubiksImage", url);
+                            rubik?.setImage(url);
+                            // Optionally close menu on selection: setIsMenuOpen(false);
+                        }}
+                        className="px-2 py-1 bg-gray-800 text-white rounded"
+                    >
+                        <option value="">Select Image</option>{" "}
+                        {/* Default option */}
+                        {/* Map through available images (default + uploaded) */}
+                        {images.map((img) => (
+                            <option key={img.url} value={img.url}>
+                                {img.label} {/* Display image label */}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {/* Hidden file input element - remains unchanged */}
+            <input
+                type="file"
+                accept="image/*" // Accept only image files
+                className="hidden" // Hide the default input UI
+                ref={fileInputRef} // Assign ref
+                onChange={handleFileChange} // Attach change handler
+            />
             {/* Back button container positioned absolutely at the top-left */}
             <div className="absolute top-4 left-4 z-10 flex space-x-2">
                 {/* Button to navigate back to the home page */}
