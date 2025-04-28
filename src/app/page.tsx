@@ -15,9 +15,8 @@ function StylizedPlanet() {
 export default function LandingPage() {
     return (
         <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-black to-blue-950">
-            {/* Sidebar navigation - Center content */}
-            <nav className="text-white p-6 md:w-1/2 flex flex-col items-center justify-center h-full">
-                <h1 className="text-6xl font-bold mb-8 [text-shadow:_-3px_-3px_0_#2563eb,_3px_-3px_0_#2563eb,_-3px_3px_0_#2563eb,_3px_3px_0_#2563eb]">
+            <nav className="text-white p-6 md:w-1/2 flex flex-col items-center justify-center h-full text-center">
+                <h1 className="text-4xl md:text-6xl font-bold mb-8 [text-shadow:_-3px_-3px_0_#2563eb,_3px_-3px_0_#2563eb,_-3px_3px_0_#2563eb,_3px_3px_0_#2563eb]">
                     Skibidi Rizzler Rubiks
                 </h1>
                 <ul className="flex flex-col items-center space-y-4 text-4xl">
@@ -30,18 +29,12 @@ export default function LandingPage() {
                         </a>
                     </li>
                     <li>
-                        <a
-                            href="/sandbox"
-                            className=" hover:text-blue-300"
-                        >
+                        <a href="/sandbox" className=" hover:text-blue-300">
                             Sandbox
                         </a>
                     </li>
                     <li>
-                        <a
-                            href="/settings"
-                            className=" hover:text-blue-300"
-                        >
+                        <a href="/settings" className=" hover:text-blue-300">
                             Settings
                         </a>
                     </li>
