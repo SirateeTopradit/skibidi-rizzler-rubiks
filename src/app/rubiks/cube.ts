@@ -1,7 +1,7 @@
 import { Camera, Color, Group, Matrix4, Vector2, Vector3 } from "three";
 import { setFinish } from "./statusbar";
-import { getAngleBetweenTwoVector2, equalDirection } from "../util/math";
-import { ndcToScreen } from "../util/transform";
+import { getAngleBetweenTwoVector2, equalDirection } from "./math";
+import { ndcToScreen } from "./transform";
 import CubeData from "./cubeData";
 import CubeState, { RotateDirection } from "./cubeState";
 import { createSquare, SquareMesh } from "./square";

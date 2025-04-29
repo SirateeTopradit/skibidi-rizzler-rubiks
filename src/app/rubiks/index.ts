@@ -6,12 +6,12 @@ import {
     FloatType,
 } from "three";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-import createCamera from "./components/camera";
-import createScene from "./components/scene";
-import createRenderer from "./components/renderer";
-import { Cube } from "./core/cube";
-import Control, { MouseControl, TouchControl } from "./core/control";
-import { setTime, setFinish } from "./core/statusbar";
+import createCamera from "./camera";
+import createScene from "./scene";
+import createRenderer from "./renderer";
+import { Cube } from "./cube";
+import Control, { MouseControl, TouchControl } from "./control";
+import { setTime, setFinish } from "./statusbar";
 import confetti from "canvas-confetti";
 
 /**

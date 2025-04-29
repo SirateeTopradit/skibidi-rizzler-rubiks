@@ -7,7 +7,7 @@ import {
     WebGLRenderer,
 } from "three";
 import { Cube } from "./cube";
-import { rotateAroundWorldAxis } from "../util/transform";
+import { rotateAroundWorldAxis } from "./transform";
 import { SquareMesh } from "./square";
 import { setFinish } from "./statusbar";
 
