@@ -163,13 +163,13 @@ export default function Page() {
                         onClick={() => { rubik?.disorder2(); setIsMenuOpen(false); }}
                         className="px-3 py-1 bg-yellow-600 text-white rounded text-left"
                     >
-                        Test Scramble
+                        Scramble
                     </button>
                     <button
                         onClick={() => { rubik?.disorder(); setIsMenuOpen(false); }}
                         className="px-3 py-1 bg-blue-600 text-white rounded text-left"
                     >
-                        Start
+                        Instant Scramble
                     </button>
                     <button
                         onClick={() => { rubik?.restore(); setIsMenuOpen(false); }}
